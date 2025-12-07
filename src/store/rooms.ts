@@ -1,16 +1,23 @@
+import { defineStore } from 'pinia'
 import type { Room } from '../types/room'
+import { getRooms, createRoom } from '../api/rooms.mock'
 
-const rooms: Room[] = [
-  { id: 1, number: '101', type: 'Standard', price: 80 },
-  { id: 2, number: '102', type: 'Deluxe', price: 120 }
-]
+export const useRoomsStore = defineStore('rooms', {
+  state: () => ({
+    items: [] as Room[],
+    loading: false
+  }),
 
-export function getRooms(): Promise<Room[]> {
-  return Promise.resolve([...rooms])
-}
+  actions: {
+    async fetchRooms() {
+      this.loading = true
+      this.items = await getRooms()
+      this.loading = false
+    },
 
-export function createRoom(data: Omit<Room, 'id'>): Promise<Room> {
-  const newRoom: Room = { id: Date.now(), ...data }
-  rooms.push(newRoom)
-  return Promise.resolve(newRoom)
-}
+    async addRoom(data: Omit<Room, 'id'>) {
+      const saved = await createRoom(data)
+      this.items.push(saved)
+    }
+  }
+})
