@@ -10,19 +10,25 @@ const auth = useAuthStore()
 
 const email = ref('')
 const password = ref('')
+const loading = ref(false)
 const errorMessage = ref('')
 
-function login() {
+async function login() {
   if (!email.value || !password.value) {
     errorMessage.value = 'Todos los campos son obligatorios'
     return
   }
 
-  // Mock login
-  auth.login(email.value)
+ loading.value = true
 
-  // Redirigir a dashboard
-  router.push('/rooms')
+  try {
+    await auth.login(email.value, password.value)
+    router.push('/rooms')
+  } catch (err: any) {
+    errorMessage.value = err.message || 'Error inesperado'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

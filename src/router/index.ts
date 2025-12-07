@@ -9,7 +9,9 @@ import { useAuthStore } from '../store/auth'
 const routes = [
   { path: '/login', 
     component: AuthLayout,
-    children: [{ path: '', component: Login }]},
+    children: [{ path: '', component: Login }],
+    meta: { public: true } 
+  },
   {
     path: '/',
     component: AppLayout,
@@ -28,7 +30,13 @@ export const router = createRouter({
 
 router.beforeEach((to) => {
   const auth = useAuthStore()
+  if (!auth.user) {
+    auth.loadFromStorage()
+  }
   if (to.meta.requiresAuth && !auth.user) {
     return '/login'
+  }
+  if (to.meta.public && auth.user) {
+    return '/rooms'
   }
 })
