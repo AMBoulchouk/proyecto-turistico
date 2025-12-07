@@ -1,0 +1,46 @@
+:root {
+  /* Colors (match design-tokens.ts) */
+  --color-primary: #3B82F6;
+  --color-primary-dark: #2563EB;
+  --color-secondary: #6B7280;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-background: #F9FAFB;
+  --color-text: #111827;
+  --color-disabled: #E5E7EB;
+  --color-text-inverted: #FFFFFF;
+  
+  /* Shadows */
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* Spacing (match spacing object: xs, sm, md, lg, xl) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Component Sizes */
+  --modal-width: 420px;
+
+
+  /* Typography */
+  --font-base: 'Inter', sans-serif;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+}
+
+body {
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  background: var(--color-background);
+  color: var(--color-text);
+}
