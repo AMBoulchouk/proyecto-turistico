@@ -21,6 +21,7 @@ export const useReservationsStore = defineStore('reservations', {
     const newReservation: Reservation = {
         id: Date.now(),
         guestName: data.guestName,
+        roomName: data.roomName,
         roomId: data.roomId,
         startDate: data.startDate,
         endDate: data.endDate
@@ -54,6 +55,7 @@ export const useReservationsStore = defineStore('reservations', {
       this.items[index] = {
         id,
         guestName: data.guestName,
+        roomName: data.roomName,
         roomId: data.roomId,
         startDate: data.startDate,
         endDate: data.endDate
