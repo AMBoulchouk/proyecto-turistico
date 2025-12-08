@@ -31,7 +31,7 @@ onMounted(async () => {
 
 const columns = [
   { key: 'guestName', label: 'Huésped' },
-  { key: 'roomId', label: 'Hab.' },
+  { key: 'roomName', label: 'Hab.' },
   { key: 'startDate', label: 'Desde' },
   { key: 'endDate', label: 'Hasta' }
 ]
@@ -112,6 +112,7 @@ function deleteReservation(r: Reservation) {
         <ReservationForm
             :initialData="editingReservation ? {
             id: editingReservation.id,
+            roomName: editingReservation.roomName,
             guestName: editingReservation.guestName,
             roomId: editingReservation.roomId,
             startDate: editingReservation.startDate,
