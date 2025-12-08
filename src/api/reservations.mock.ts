@@ -1,4 +1,5 @@
 import type { Reservation, ReservationPayload } from "../types/reservations"
+import { getRooms } from "./rooms.mock"
 
 
 
@@ -17,8 +18,19 @@ export function getReservations(): Promise<Reservation[]> {
   return Promise.resolve([...reservations])
 }
 
-export function createReservation(data: ReservationPayload): Promise<Reservation> {
-  const newReservation: Reservation = { id: Date.now(), ...data }
+export async function createReservation(data: ReservationPayload): Promise<Reservation> {
+  const rooms = await getRooms()
+  const roomName = rooms.find(r => r.id === data.roomId)?.number || ""
+
+  const newReservation: Reservation = {
+    id: Date.now(),
+    roomId: data.roomId,
+    roomName: roomName,
+    guestName: data.guestName,
+    startDate: data.startDate,
+    endDate: data.endDate
+  }
+
   reservations.push(newReservation)
   return Promise.resolve(newReservation)
 }
