@@ -1,14 +1,13 @@
 <script setup lang="ts">
-// App no necesita lógica por ahora.
-// Toda la navegación y layouts los maneja el router.
+import { useUiStore } from './store/ui'
+import Toast from './components/ui/Toast.vue'
+const ui = useUiStore()
 </script>
 
 <template>
-  <!-- El router se encarga de cargar AuthLayout o AppLayout -->
-  <router-view />
+   <router-view />
+   <Toast />
+    <div v-if="ui.loading" class="loading-overlay">
+    Cargando...
+  </div>
 </template>
-
-<style>
-/* Estilos globales pueden ir aquí si se necesitan,
-pero en general usamos main.css como fuente de tokens y resets. */
-</style>

@@ -4,6 +4,7 @@ import Input from '../../components/ui/Input.vue'
 import Select from '../../components/ui/Select.vue'
 import Button from '../../components/ui/Button.vue'
 import type { RoomPayload } from '../../types/room'
+import { required, isNumber, isPositive } from '../../utils/validators'
 
 interface Props {
   initialData?: RoomPayload
@@ -42,12 +43,15 @@ watch(
 )
 
 function validate() {
-  if (!number.value) return 'El número es obligatorio'
-  if (isNaN(Number(number.value))) return 'El número debe ser numérico'
-  if (!type.value) return 'El tipo es obligatorio'
-  if (!price.value) return 'El precio es obligatorio'
-  if (isNaN(Number(price.value))) return 'El precio debe ser numérico'
-  if (Number(price.value) <= 0) return 'El precio debe ser mayor que 0'
+  if (!required(number.value)) return 'El número es obligatorio'
+  if (!isNumber(number.value)) return 'El número debe ser numérico'
+
+  if (!required(type.value)) return 'Debe seleccionar un tipo'
+
+  if (!required(price.value)) return 'El precio es obligatorio'
+  if (!isNumber(price.value)) return 'El precio debe ser numérico'
+  if (!isPositive(price.value)) return 'El precio debe ser mayor a 0'
+
   return null
 }
 
@@ -68,9 +72,9 @@ function submit() {
 
 <template>
   <div class="form">
-    <Input label="Número" v-model="number" />
+    <Input label="Número" v-model="number" v-only-numbers />
     <Select label="Tipo" v-model="type" :options="roomTypes" />
-    <Input label="Precio" v-model="price" type="number" />
+    <Input label="Precio" v-model="price" type="number" v-only-numbers />
 
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 
