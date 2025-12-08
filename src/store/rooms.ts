@@ -18,6 +18,17 @@ export const useRoomsStore = defineStore('rooms', {
     async addRoom(data: Omit<Room, 'id'>) {
       const saved = await createRoom(data)
       this.items.push(saved)
+    },
+     updateRoom(id: number, data: Omit<Room, 'id'>) {
+      const index = this.items.findIndex(r => r.id === id)
+      if (index === -1) return
+
+      const updated = { id, ...data }
+      this.items[index] = updated
+    },
+     deleteRoom(id: number) {
+      this.items = this.items.filter(r => r.id !== id)
     }
+
   }
 })
