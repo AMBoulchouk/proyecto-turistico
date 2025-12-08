@@ -7,7 +7,7 @@ import Table from '../../components/ui/Table.vue'
 import Button from '../../components/ui/Button.vue'
 import Modal from '../../components/ui/Modal.vue'
 import ReservationForm from './ReservationForm.vue'
-
+import { useUiStore, useToastStore } from '../../store/ui'
 import type { Reservation, ReservationPayload } from '../../types/reservations'     
 
 const reservationsStore = useReservationsStore()
@@ -16,9 +16,17 @@ const roomsStore = useRoomsStore()
 const showModal = ref(false)
 const editingReservation = ref<Reservation | null>(null)
 
-onMounted(() => {
-  roomsStore.fetchRooms()
-  reservationsStore.fetchReservations()
+const ui = useUiStore()
+const toast = useToastStore()
+
+onMounted(async () => {
+    try {
+    ui.startLoading()
+    await roomsStore.fetchRooms()
+    await reservationsStore.fetchReservations()
+  } finally {
+    ui.stopLoading()
+  }
 })
 
 const columns = [
@@ -37,18 +45,42 @@ function openEditModal(r: Reservation) {
   showModal.value = true
 }
 async function handleSave(data: ReservationPayload) {
-  if (editingReservation.value) {
-    await reservationsStore.updateReservation(editingReservation.value.id, data)
-  } else {
-    await reservationsStore.addReservation(data)
-  }
+  try {
+    ui.startLoading()
 
-  showModal.value = false
+    if (editingReservation.value) {
+      await reservationsStore.updateReservation(editingReservation.value.id, data)
+      toast.show('Reserva actualizada correctamente')
+    } else {
+      await reservationsStore.addReservation(data)
+      toast.show('Reserva creada correctamente')
+    }
+
+    showModal.value = false
+
+  } catch (err) {
+    toast.show('Ocurrió un error al guardar la reserva')
+
+  } finally {
+    ui.stopLoading()
+  }
 }
 
 function deleteReservation(r: Reservation) {
-  if (!confirm(`¿Eliminar reserva de ${r.guestName}?`)) return
-  reservationsStore.deleteReservation(r.id)
+   if (!confirm(`¿Eliminar reserva de ${r.guestName}?`)) return
+
+  try {
+    ui.startLoading()
+
+    reservationsStore.deleteReservation(r.id)
+    toast.show('Reserva eliminada correctamente')
+
+  } catch (err) {
+    toast.show('Error al eliminar la reserva')
+
+  } finally {
+    ui.stopLoading()
+  }
 }
 </script>
 

@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits(['update:modelValue'])
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
@@ -21,6 +22,7 @@ const emit = defineEmits(['update:modelValue'])
 
     <input
       :value="modelValue"
+       v-bind="$attrs"
       :type="type"
       :disabled="disabled"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"

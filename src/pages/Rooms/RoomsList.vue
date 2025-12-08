@@ -6,13 +6,16 @@ import Button from '../../components/ui/Button.vue'
 import Modal from '../../components/ui/Modal.vue'
 import RoomForm from './RoomForm.vue'
 import type { Room, RoomPayload } from '../../types/room'
-
+import { useUiStore, useToastStore } from '../../store/ui'
 
 const store = useRoomsStore()
+const ui = useUiStore()
+const toast = useToastStore()
 const showModal = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 const editingRoom = ref<Room | null>(null)
+
 
 // Columnas de la tabla
 const columns = [
@@ -22,8 +25,13 @@ const columns = [
 ]
 
 // Cargar habitaciones al iniciar
-onMounted(() => {
-  store.fetchRooms()
+onMounted(async () => {
+  try {
+    ui.startLoading()
+    await store.fetchRooms()
+  } finally {
+    ui.stopLoading()
+  }
 })
 
 function openCreateModal() {
@@ -40,35 +48,40 @@ function openEditModal(room: Room) {
   showModal.value = true
 }
 
- function handleCreate(data: RoomPayload) {
-  try {
+async function handleCreate(data: RoomPayload) {
+ try {
+    ui.startLoading()
+
     if (editingRoom.value) {
-      // Editando
-       store.updateRoom(editingRoom.value.id, data)
-      successMessage.value = 'Habitación actualizada correctamente'
+      await store.updateRoom(editingRoom.value.id, data)
+      toast.show('Habitación actualizada correctamente')
     } else {
-      // Creando
-       store.addRoom(data)
-      successMessage.value = 'Habitación creada correctamente'
+      await store.addRoom(data)
+      toast.show('Habitación creada correctamente')
     }
 
     showModal.value = false
+    editingRoom.value = null
+
   } catch (err) {
-    errorMessage.value =
-      err instanceof Error ? err.message : 'Error guardando la habitación'
+    toast.show('Error al guardar la habitación')
+  } finally {
+    ui.stopLoading()
   }
 }
 
 function removeRoom(room: Room) {
-  const confirmDelete = confirm(`¿Eliminar la habitación ${room.number}?`)
+ const confirmDelete = confirm(`¿Eliminar la habitación ${room.number}?`)
   if (!confirmDelete) return
 
   try {
+    ui.startLoading()
     store.deleteRoom(room.id)
-    successMessage.value = 'Habitación eliminada correctamente'
+    toast.show('Habitación eliminada correctamente')
   } catch (err) {
-    errorMessage.value =
-      err instanceof Error ? err.message : 'Error eliminando la habitación'
+    toast.show('Error eliminando la habitación')
+  } finally {
+    ui.stopLoading()
   }
 }
 </script>
@@ -98,7 +111,7 @@ function removeRoom(room: Room) {
     </Table>
 
     <!-- Modal con formulario -->
-    <Modal :open="showModal" :title="editingRoom ? 'Editar Habitación' : 'Crear Habitación'" @close="showModal = false">
+    <Modal :open="showModal" :title="editingRoom ? 'Editar Habitación' : 'Crear Habitación'" @close="() => { showModal = false; editingRoom = null }">
       <RoomForm
         :initialData="editingRoom ? ({
           number: editingRoom.number,

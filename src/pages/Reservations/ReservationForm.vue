@@ -8,6 +8,7 @@ import { useRoomsStore } from '../../store/rooms'
 import type { ReservationPayload } from '../../types/reservations'
 import DateRangePicker from '../../components/ui/DateRangePicker.vue'
 import CalendarAvailability from '../../components/ui/CalendarAvailability.vue'
+import { required, isValidDateRange } from '../../utils/validators'
 
 const emit = defineEmits(['submit'])
 const props = defineProps<{ initialData?: ReservationPayload & { id?: number } }>()
@@ -36,20 +37,20 @@ watch(() => props.initialData, data => {
 }, { immediate: true })
 
 function validate(): string | null {
-  if (!guestName.value) return 'El nombre del huésped es obligatorio'
-  if (!roomId.value) return 'Debe seleccionar una habitación'
-  if (!startDate.value || !endDate.value) return 'Debe seleccionar fechas'
-  if (startDate.value > endDate.value) return 'La fecha de inicio no puede ser mayor a la de fin'
+    if (!required(guestName.value)) return 'El nombre del huésped es obligatorio'
+    if (!required(roomId.value)) return 'Debe seleccionar una habitación'
+    if (!isValidDateRange(startDate.value, endDate.value))
+      return 'La fecha de inicio no puede ser mayor a la de fin'
 
-  const available = reservationsStore.isRoomAvailable(
-    Number(roomId.value),
-    startDate.value,
-    endDate.value,
-    props.initialData?.id
-  )
-  if (!available) return 'La habitación no está disponible en esas fechas'
+    const available = reservationsStore.isRoomAvailable(
+      Number(roomId.value),
+      startDate.value,
+      endDate.value,
+      props.initialData?.id
+    )
+    if (!available) return 'La habitación no está disponible en esas fechas'
 
-  return null
+    return null
 }
 
 async function submit() {
@@ -80,7 +81,7 @@ const availableRooms = computed(() => {
 
 <template>
   <div class="form">
-    <Input label="Huésped" v-model="guestName" />
+    <Input label="Huésped" v-model="guestName" v-only-letters />
     <Select
       label="Habitación"
       v-model="roomId"
@@ -94,7 +95,9 @@ const availableRooms = computed(() => {
       @update:end="endDate = $event"
     />
     <CalendarAvailability
-      :reservations="reservationsStore.items.filter(r => r.roomId === Number(roomId))"
+      :reservations="reservationsStore.items.filter(r => r.roomId === Number(roomId))" 
+      :externalStart="startDate"
+      :externalEnd="endDate"
       @select="({ start, end }) => { startDate = start; endDate = end }"
     />
 
