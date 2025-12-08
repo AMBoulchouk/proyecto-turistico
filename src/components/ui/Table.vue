@@ -17,12 +17,16 @@ defineProps<Props>()
     <thead>
       <tr>
         <th v-for="col in columns" :key="col.key">{{ col.label }}</th>
+        <th v-if="$slots.actions">Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="row in rows" :key="row.id">
         <td v-for="col in columns" :key="col.key">
           {{ row[col.key] }}
+        </td>
+             <td v-if="$slots.actions">
+          <slot name="actions" :row="row" />
         </td>
       </tr>
     </tbody>

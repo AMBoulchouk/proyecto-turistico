@@ -4,3 +4,7 @@ export interface Room {
   type: string
   price: number
 }
+export type RoomPayload = Omit<Room, 'id'>
+export interface RoomFormProps {
+  initialData?: RoomPayload
+}

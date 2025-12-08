@@ -1,25 +1,26 @@
 <template>
   <div class="app-layout">
-    <aside class="sidebar">
-      <h2 class="brand">Hotel Admin</h2>
-
-      <nav class="menu">
-        <RouterLink to="/rooms" class="menu-item">Habitaciones</RouterLink>
-        <RouterLink to="/reservations" class="menu-item">Reservas</RouterLink>
-      </nav>
-    </aside>
-
-    <div class="main">
-      <header class="header">
+      <aside class="sidebar">
+          <h2 class="brand">Hotel Admin</h2>
+          
+          <nav class="menu">
+              <RouterLink to="/rooms" class="menu-item">Habitaciones</RouterLink>
+              <RouterLink to="/reservations" class="menu-item">Reservas</RouterLink>
+            </nav>
+        </aside>
+        
+        <div class="main">
+            <header class="header">
         <h1 class="title"><slot name="title" /></h1>
         <button class="logout-btn" @click="logout">Salir</button>
-      </header>
-
-      <main class="content">
+    </header>
+    
+    <main class="content">
         <slot />
-      </main>
-    </div>
-  </div>
+        <router-view />
+    </main>
+</div>
+</div>
 </template>
 
 <script setup lang="ts">
