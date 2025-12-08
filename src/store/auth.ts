@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { loginMock } from '../api/auth.mock'
+import { router } from '../router'
 
 interface User {
   email: string
@@ -25,6 +26,7 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.user = null
       localStorage.removeItem('auth')
+      router.push('/login')
     },
 
     loadFromStorage() {
