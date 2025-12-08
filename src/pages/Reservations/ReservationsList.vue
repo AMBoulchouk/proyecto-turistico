@@ -91,9 +91,7 @@ function deleteReservation(r: Reservation) {
   </div>
 </template>
 <style scoped>
-.reservations-wrapper {
-  padding: var(--spacing-lg);
-}
+
 
 .header {
   display: flex;
