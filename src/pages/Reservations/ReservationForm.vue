@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Input from '../../components/ui/Input.vue'
 import Select from '../../components/ui/Select.vue'
 import Button from '../../components/ui/Button.vue'
 import { useReservationsStore } from '../../store/reservations'
 import { useRoomsStore } from '../../store/rooms'
 import type { ReservationPayload } from '../../types/reservations'
+import DateRangePicker from '../../components/ui/DateRangePicker.vue'
+import CalendarAvailability from '../../components/ui/CalendarAvailability.vue'
 
 const emit = defineEmits(['submit'])
 const props = defineProps<{ initialData?: ReservationPayload & { id?: number } }>()
@@ -64,6 +66,16 @@ async function submit() {
     endDate: endDate.value
   })
 }
+
+const availableRooms = computed(() => {
+  if (!startDate.value || !endDate.value) return roomsStore.items
+
+  return reservationsStore.getAvailableRooms(
+    startDate.value,
+    endDate.value,
+    props.initialData?.id
+  )
+})
 </script>
 
 <template>
@@ -72,11 +84,19 @@ async function submit() {
     <Select
       label="Habitación"
       v-model="roomId"
-      :options="roomsStore.items.map(r => ({ label: r.number, value: String(r.id) }))"
+      :options="availableRooms.map(r => ({ label: r.number, value: String(r.id) }))"
     />
 
-    <Input label="Desde" type="date" v-model="startDate" />
-    <Input label="Hasta" type="date" v-model="endDate" />
+    <DateRangePicker 
+      :start="startDate"
+      :end="endDate"
+      @update:start="startDate = $event"
+      @update:end="endDate = $event"
+    />
+    <CalendarAvailability
+      :reservations="reservationsStore.items.filter(r => r.roomId === Number(roomId))"
+      @select="({ start, end }) => { startDate = start; endDate = end }"
+    />
 
     <p v-if="error" class="error">{{ error }}</p>
 
