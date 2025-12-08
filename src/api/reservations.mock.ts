@@ -6,6 +6,7 @@ let reservations: Reservation[] = [
   {
     id: 1,
     roomId: 1,
+    roomName: '101',
     guestName: 'Carlos López',
     startDate: '2025-02-01',
     endDate: '2025-02-05'
