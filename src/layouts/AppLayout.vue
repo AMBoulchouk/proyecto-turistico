@@ -11,7 +11,8 @@
         
         <div class="main">
             <header class="header">
-        <h1 class="title"><slot name="title" /></h1>
+        
+        <div class="user-email">{{ userEmail }}</div>
         <button class="logout-btn" @click="logout">Salir</button>
     </header>
     
@@ -24,12 +25,17 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
 
 const auth = useAuthStore()
+const router = useRouter()
+
+const userEmail = auth.user?.email || 'Usuario'
 
 function logout() {
   auth.logout()
+    router.push('/login')
 }
 </script>
 
