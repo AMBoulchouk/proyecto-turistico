@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getReservations } from '../api/reservations.mock'
+import { createReservation, getReservations } from '../api/reservations.mock'
 import type { Reservation, ReservationPayload } from '../types/reservations'
 import { useRoomsStore } from './rooms'
 
@@ -7,7 +7,7 @@ import { useRoomsStore } from './rooms'
 export const useReservationsStore = defineStore('reservations', {
   state: () => ({
     items: [] as Reservation[],
-    loading: false
+    loading: false,
   }),
 
   actions: {
@@ -17,18 +17,18 @@ export const useReservationsStore = defineStore('reservations', {
       this.loading = false
     },
 
-    addReservation(data: ReservationPayload) {
-    const newReservation: Reservation = {
-        id: Date.now(),
-        guestName: data.guestName,
-        roomName: data.roomName,
-        roomId: data.roomId,
-        startDate: data.startDate,
-        endDate: data.endDate
-    }
+    async addReservation(data: ReservationPayload) {
+      const roomsStore = useRoomsStore()
+      const room = roomsStore.items.find(r => r.id === data.roomId)
 
-    this.items.push(newReservation)
-    return newReservation
+      const payload: ReservationPayload = {
+        ...data,
+        roomName: room?.number || ''
+      }
+
+      const saved = await createReservation(payload) 
+      this.items.push(saved)                        
+      
     },
 
     // Validación simple de solapamientos (mock)
@@ -50,13 +50,17 @@ export const useReservationsStore = defineStore('reservations', {
 
     updateReservation(id: number, data: ReservationPayload) {
       const index = this.items.findIndex(r => r.id === id)
+      const roomsStore = useRoomsStore()
+      const room = roomsStore.items.find(r => r.id === data.roomId)
+
       if (index === -1) return
 
       this.items[index] = {
         id,
         guestName: data.guestName,
-        roomName: data.roomName,
+        roomName: room?.number || ' ',
         roomId: data.roomId,
+      
         startDate: data.startDate,
         endDate: data.endDate
       }

@@ -19,6 +19,7 @@ const roomsStore = useRoomsStore()
 
 const guestName = ref('')
 const roomId = ref('')
+const roomName = ref('')
 const startDate = ref('')
 const endDate = ref('')
 
@@ -31,10 +32,16 @@ watch(() => props.initialData, data => {
   if (data) {
     guestName.value = data.guestName
     roomId.value = String(data.roomId)
+    roomName.value = data.roomName
     startDate.value = data.startDate
     endDate.value = data.endDate
   }
 }, { immediate: true })
+
+watch(roomId, (id) => {
+  const room = roomsStore.items.find(r => r.id === Number(id))
+  roomName.value = room ? room.number : ''
+})
 
 function validate(): string | null {
     if (!required(guestName.value)) return 'El nombre del huésped es obligatorio'
@@ -63,6 +70,7 @@ async function submit() {
   emit('submit', {
     guestName: guestName.value,
     roomId: Number(roomId.value),
+    roomName: roomName.value,
     startDate: startDate.value,
     endDate: endDate.value
   })
