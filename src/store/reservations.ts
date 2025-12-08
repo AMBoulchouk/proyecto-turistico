@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getReservations, createReservation } from '../api/reservations.mock'
+import { getReservations } from '../api/reservations.mock'
 import type { Reservation, ReservationPayload } from '../types/reservations'
 import { useRoomsStore } from './rooms'
 
